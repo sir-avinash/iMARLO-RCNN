@@ -25,7 +25,7 @@ addpath(imDir);
 options = trainingOptions('sgdm', ...
   'MiniBatchSize', 32, ...
   'InitialLearnRate', 1e-6, ...
-  'MaxEpochs', 20);
+  'MaxEpochs',  10);
 
 % A trained network is loaded from disk to save time when running the
 % example. Set this flag to true to train the network.
@@ -41,19 +41,19 @@ else
     load('rcnnStopSigns.mat','cifar10Net')
 end
 
-%% Traning 
-rcnn = trainRCNNObjectDetector(step1Data, cifar10Net, options, 'NegativeOverlapRange', [0 0.3]);
+%% Traning - use either 'trainRCNNObjectDetector' or ''
+rcnn = trainFasterRCNNObjectDetector(step1Data, cifar10Net, options, 'NegativeOverlapRange', [0 0.3]);
 
 %% Test
-test_img = fullfile(pwd,'sample_data_steplen','multitexture_wshadow','image4.png');
+test_img = fullfile(pwd,'sample_data_steplen','multitexture_wshadow','image14.png');
 img = imread(test_img);
 
-[bbox, score, label] = detect(rcnn, img, 'MiniBatchSize', 32);
+[bbox, score, label] = detect(rcnn, img) %, 'MiniBatchSize', 32);
 
 %% Visualize result
 % [score, idx] = max(score);
 
-bbox = bbox(idx, :);
+% bbox = bbox(idx, :);
 annotation = sprintf('%s: (Confidence = %f)', label(idx), score);
 
 detectedImg = insertObjectAnnotation(img, 'rectangle', bbox, annotation);
